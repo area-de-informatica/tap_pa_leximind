@@ -1,0 +1,30 @@
+import { defineStore } from 'pinia'
+
+export const useCasesStore = defineStore('useCases', {
+  state: () => ({
+    useCases: [],
+    currentUseCase: null,
+  }),
+  actions: {
+    async fetchUseCases() {
+      try {
+        const response = await $fetch('/api/use-cases', { method: 'GET' })
+        this.useCases = response
+      } catch (error) {
+        console.error('Error fetching use cases:', error)
+      }
+    },
+    setCurrentUseCase(useCase) {
+      this.currentUseCase = { ...useCase }
+    },
+    updateUseCase(updatedUseCase) {
+      const index = this.useCases.findIndex(u => u.id === updatedUseCase.id)
+      if (index !== -1) {
+        this.useCases[index] = { ...updatedUseCase }
+        if (this.currentUseCase && this.currentUseCase.id === updatedUseCase.id) {
+          this.currentUseCase = { ...updatedUseCase }
+        }
+      }
+    },
+  },
+})
